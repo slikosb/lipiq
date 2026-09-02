@@ -56,4 +56,10 @@ export class App {
       this.searchByBarcode(result);
     }
   }
+
+  onPermissionResponse(hasPermission: boolean): void {
+    if (!hasPermission) {
+      this.errorMessage.set('Accès à la caméra refusé dans votre navigateur.');
+    }
+  }
 }

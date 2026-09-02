@@ -34,6 +34,17 @@
     </button>
   </section>
 
+  <!-- LE SCANNER CAMÉRA -->
+  @if (isScannerOpen()) {
+    <div style="margin-bottom: 20px; border-radius: 12px; overflow: hidden; background: #000">
+      <zxing-scanner
+        [formats]="allowedFormats"
+        (scanSuccess)="onScanSuccess($event)"
+        (permissionResponse)="onPermissionResponse($event)"
+      ></zxing-scanner>
+    </div>
+  }
+
   @if (loading()) {
     <p style="text-align: center; color: #666">Recherche du produit...</p>
   }
@@ -71,7 +82,6 @@
         <h2 style="margin: 0 0 4px 0; font-size: 20px">{{ product.product_name }}</h2>
         <p style="color: #888; font-size: 14px; margin: 0 0 16px 0">{{ product.brands }}</p>
 
-        <!-- Badge Verdict -->
         <div
           [class]="analysis.colorClass"
           style="
