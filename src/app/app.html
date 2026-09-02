@@ -30,17 +30,10 @@
       style="padding: 12px; background: #f3b300; border: none; border-radius: 8px; cursor: pointer"
       title="Scanner un code-barres"
     >
-      📷
+      Scanner
     </button>
   </section>
 
-  <div>
-    <p style="color: #666; font-size: 14px; margin: 0">
-      J'ai mis le bouton jaune pour toi ma louloutre
-    </p>
-  </div>
-
-  <!-- LE SCANNER CAMÉRA -->
   @if (isScannerOpen()) {
     <div style="margin-bottom: 20px; border-radius: 12px; overflow: hidden; background: #000">
       <zxing-scanner
@@ -85,7 +78,38 @@
           style="width: 100%; height: 180px; object-fit: contain; margin-bottom: 12px"
         />
 
-        <h2 style="margin: 0 0 4px 0; font-size: 20px">{{ product.product_name }}</h2>
+        <div
+          style="
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+          "
+        >
+          <h2 style="margin: 0 0 4px 0; font-size: 20px">{{ product.product_name }}</h2>
+          <button
+            (click)="productService.toggleFavorite(product.code || barcodeInput)"
+            style="
+              background: none;
+              border: none;
+              margin-right: 12px;
+              padding: 4px;
+              cursor: pointer;
+              display: flex;
+              align-items: center;
+            "
+            title="Ajouter aux favoris"
+          >
+            <lucide-icon
+              [img]="Star"
+              [size]="24"
+              [style.color]="
+                productService.isFavorite(product.code || barcodeInput) ? '#f3b300' : '#ccc'
+              "
+            ></lucide-icon>
+          </button>
+        </div>
+
         <p style="color: #888; font-size: 14px; margin: 0 0 16px 0">{{ product.brands }}</p>
 
         <div

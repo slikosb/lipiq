@@ -12,6 +12,34 @@ export class ProductService {
 
   currentProduct = signal<Product | null>(null);
   analysis = signal<CholesterolAnalysis | null>(null);
+  favorites = signal<string[]>(this.loadFavorites());
+
+  private loadFavorites(): string[] {
+    try {
+      const saved = localStorage.getItem('lipiq_favorites');
+      return saved ? JSON.parse(saved) : [];
+    } catch {
+      return [];
+    }
+  }
+
+  isFavorite(barcode: string): boolean {
+    if (!barcode) return false;
+    return this.favorites().includes(barcode);
+  }
+
+  toggleFavorite(barcode: string): void {
+    if (!barcode) return;
+    const cleanCode = barcode.trim();
+    const current = this.favorites();
+
+    const updated = current.includes(barcode)
+      ? current.filter((id) => id !== barcode)
+      : [...current, barcode];
+
+    this.favorites.set(updated);
+    localStorage.setItem('lipiq_favorites', JSON.stringify(updated));
+  }
 
   getByBarcode(barcode: string): Observable<Product> {
     return this.http.get<any>(`${this.apiUrl}/${barcode}.json`).pipe(

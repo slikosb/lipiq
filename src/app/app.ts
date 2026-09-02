@@ -1,17 +1,19 @@
 import { Component, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ZXingScannerModule } from '@zxing/ngx-scanner';
+import { LucideAngularModule, LUCIDE_ICONS, LucideIconProvider, Star } from 'lucide-angular';
 import { ProductService } from './services/product.service';
 import { BarcodeFormat } from '@zxing/library';
 
 @Component({
-  imports: [FormsModule, ZXingScannerModule],
+  imports: [FormsModule, ZXingScannerModule, LucideAngularModule],
   standalone: true,
   selector: 'app-root',
   styleUrl: './app.css',
   templateUrl: './app.html',
 })
 export class App {
+  readonly Star = Star;
   productService: ProductService = inject(ProductService);
 
   barcodeInput = '';
