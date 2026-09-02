@@ -38,6 +38,8 @@
     <div [style.display]="isScannerOpen() ? 'block' : 'none'">
       <zxing-scanner
         [formats]="allowedFormats"
+        [autofocusEnabled]="true"
+        [tryHarder]="true"
         (scanSuccess)="onScanSuccess($event)"
         (permissionResponse)="onPermissionResponse($event)"
       ></zxing-scanner>
