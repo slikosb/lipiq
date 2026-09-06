@@ -4,9 +4,10 @@ import { ZXingScannerModule } from '@zxing/ngx-scanner';
 import { LucideAngularModule, LUCIDE_ICONS, LucideIconProvider, Star } from 'lucide-angular';
 import { ProductService } from './services/product.service';
 import { BarcodeFormat } from '@zxing/library';
+import { CommonModule } from '@angular/common';
 
 @Component({
-  imports: [FormsModule, ZXingScannerModule, LucideAngularModule],
+  imports: [FormsModule, ZXingScannerModule, LucideAngularModule, CommonModule],
   standalone: true,
   selector: 'app-root',
   styleUrl: './app.css',
@@ -16,6 +17,7 @@ export class App {
   readonly Star = Star;
   productService: ProductService = inject(ProductService);
 
+  currentView = signal<'search' | 'favorites'>('search');
   barcodeInput = '';
   isScannerOpen = signal(false);
   loading = signal(false);
@@ -30,6 +32,17 @@ export class App {
     BarcodeFormat.CODE_128,
     BarcodeFormat.CODE_39,
   ];
+
+  setView(view: 'search' | 'favorites'): void {
+    this.currentView.set(view);
+    this.isScannerOpen.set(false);
+  }
+
+  selectFavorite(code: string): void {
+    this.barcodeInput = code;
+    this.setView('search');
+    this.searchByBarcode(code);
+  }
 
   searchByBarcode(code?: string): void {
     const targetCode: string = code || this.barcodeInput.trim();

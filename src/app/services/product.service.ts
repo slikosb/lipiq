@@ -3,6 +3,13 @@ import { inject, Injectable, signal } from '@angular/core';
 import { CholesterolAnalysis, Product } from '../models/product.models';
 import { map, Observable } from 'rxjs';
 
+export interface FavoriteProduct {
+  code: string;
+  product_name?: string;
+  image_url?: string;
+  brands?: string;
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -10,11 +17,11 @@ export class ProductService {
   private http: HttpClient = inject(HttpClient);
   private apiUrl: string = 'https://world.openfoodfacts.org/api/v2/product';
 
+  favorites = signal<Product[]>(this.loadFavorites());
   currentProduct = signal<Product | null>(null);
   analysis = signal<CholesterolAnalysis | null>(null);
-  favorites = signal<string[]>(this.loadFavorites());
 
-  private loadFavorites(): string[] {
+  private loadFavorites(): Product[] {
     try {
       const saved = localStorage.getItem('lipiq_favorites');
       return saved ? JSON.parse(saved) : [];
@@ -25,17 +32,18 @@ export class ProductService {
 
   isFavorite(barcode: string): boolean {
     if (!barcode) return false;
-    return this.favorites().includes(barcode);
+    return this.favorites().some((p) => p.code === barcode.trim());
   }
 
-  toggleFavorite(barcode: string): void {
-    if (!barcode) return;
-    const cleanCode = barcode.trim();
+  toggleFavorite(product: Product): void {
+    if (!product || !product.code) return;
+    const cleanCode = product.code.trim();
     const current = this.favorites();
+    const exists = current.some((p) => p.code === cleanCode);
 
-    const updated = current.includes(barcode)
-      ? current.filter((id) => id !== barcode)
-      : [...current, barcode];
+    const updated = exists
+      ? current.filter((p) => p.code !== cleanCode)
+      : [...current, { ...product, code: cleanCode }];
 
     this.favorites.set(updated);
     localStorage.setItem('lipiq_favorites', JSON.stringify(updated));
