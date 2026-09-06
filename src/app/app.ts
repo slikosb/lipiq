@@ -1,10 +1,11 @@
 import { Component, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ZXingScannerModule } from '@zxing/ngx-scanner';
-import { LucideAngularModule, LUCIDE_ICONS, LucideIconProvider, Star } from 'lucide-angular';
+import { LucideAngularModule, Star } from 'lucide-angular';
 import { FavoriteProduct, ProductService } from './services/product.service';
 import { BarcodeFormat } from '@zxing/library';
 import { CommonModule } from '@angular/common';
+import { Product, CholesterolAnalysis } from './models/product.models';
 
 @Component({
   imports: [FormsModule, ZXingScannerModule, LucideAngularModule, CommonModule],
@@ -45,7 +46,7 @@ export class App {
   }
 
   searchByBarcode(code?: string): void {
-    const targetCode: string = code || this.barcodeInput.trim();
+    const targetCode = code || this.barcodeInput.trim();
     if (!targetCode) return;
 
     this.loading.set(true);
@@ -56,7 +57,7 @@ export class App {
       next: () => {
         this.loading.set(false);
       },
-      error: () => {
+      error: (err) => {
         this.loading.set(false);
         this.errorMessage.set('Produit introuvable ou problème réseau.');
       },
@@ -78,5 +79,9 @@ export class App {
     if (!hasPermission) {
       this.errorMessage.set('Accès à la caméra refusé dans votre navigateur.');
     }
+  }
+
+  getAnalysis(product: Product): CholesterolAnalysis {
+    return this.productService.analyseCholesterol(product);
   }
 }

@@ -30,9 +30,12 @@ export class ProductService {
 
       return parsed.map((item: any) => {
         if (typeof item === 'string') {
-          return { code: item, product_name: `Code : ${item}` };
+          return { code: item, product_name: `Code : ${item}`, nutriments: {} };
         }
-        return item;
+        return {
+          ...item,
+          nutriments: item.nutriments || {},
+        };
       });
     } catch {
       return [];
@@ -62,49 +65,98 @@ export class ProductService {
     return this.http.get<any>(`${this.apiUrl}/${barcode}.json`).pipe(
       map((response) => {
         if (response.status === 0) {
-          throw new Error('Produit non troivé');
+          throw new Error('Produit non trouvé');
         }
 
         const product: Product = response.product;
         this.currentProduct.set(product);
-        this.analyseCholesterol(product);
+
+        const result = this.analyseCholesterol(product);
+        console.log('suis là', result);
+        this.analysis.set(result);
+
         return product;
       }),
     );
   }
 
-  private analyseCholesterol(product: Product): void {
-    const satFat = product.nutriments?.['saturated-fat_100g'] ?? 0;
-    const fiber = product.nutriments?.['fiber_100g'] ?? 0;
+  analyseCholesterol(product: Product): CholesterolAnalysis {
+    const nutriments = product.nutriments || {};
+    const satFat = nutriments['saturated-fat_100g'] ?? nutriments['saturated-fat'] ?? 0;
+    const fiber = nutriments.fiber_100g ?? nutriments.fiber ?? 0;
+    const sugars = nutriments.sugars_100g ?? nutriments.sugars ?? 0;
 
-    let result: CholesterolAnalysis;
+    const ingredients = (
+      product.ingredients_text_fr ||
+      product.ingredients_text ||
+      ''
+    ).toLowerCase();
+    const badIngredients = ['palme', 'coprah', 'coco', 'hydrogénée', 'hydrogenee'];
+    const hasBadIngredients = badIngredients.some((ing) => ingredients.includes(ing));
 
+    const reasons: string[] = [];
+    let score = 0;
+
+    // Acides Gras Saturés
     if (satFat > 5) {
-      result = {
-        status: 'MAUVAIS',
-        label: 'À éviter (Riche en graisses saturées)',
-        colorClass: 'bg-red-500 text-white',
-        saturatedFat: satFat,
-        fiber,
-      };
-    } else if (satFat > 1.5) {
-      result = {
-        status: 'MODERE',
-        label: 'À consommer avec modération',
-        colorClass: 'bg-orange-400 text-white',
-        saturatedFat: satFat,
-        fiber,
-      };
+      score += 3;
+      reasons.push("Taux d'acides gras saturés élevé");
+    } else if (satFat >= 1.5) {
+      score += 1;
+      reasons.push("Taux d'acides gras saturés modéré");
     } else {
-      result = {
-        status: 'EXCELLENT',
-        label: 'Favorable (Faible en graisses saturées)',
-        colorClass: 'bg-emerald-500 text-white',
-        saturatedFat: satFat,
-        fiber,
-      };
+      reasons.push('Faible en acides gras saturés');
     }
 
-    this.analysis.set(result);
+    // Analyse Ingrédients
+    if (hasBadIngredients) {
+      score += 2;
+      reasons.push("Présence d'huiles tropicales ou hydrogénées");
+    }
+
+    // Fibres
+    if (fiber >= 6) {
+      score -= 2;
+      reasons.push('Très riche en fibres (effet protecteur)');
+    } else if (fiber >= 3) {
+      score -= 1;
+      reasons.push('Source de fibres');
+    }
+
+    // Attribution des statuts
+    if (score <= 0) {
+      return {
+        status: 'EXCELLENT',
+        scoreLevel: 'GREEN',
+        label: 'Favorable',
+        saturatedFat: satFat,
+        fiber,
+        sugars,
+        hasBadIngredients,
+        reasons,
+      };
+    } else if (score <= 2) {
+      return {
+        status: 'MODERE',
+        scoreLevel: 'ORANGE',
+        label: 'À limiter',
+        saturatedFat: satFat,
+        fiber,
+        sugars,
+        hasBadIngredients,
+        reasons,
+      };
+    } else {
+      return {
+        status: 'MAUVAIS',
+        scoreLevel: 'RED',
+        label: 'Déconseillé',
+        saturatedFat: satFat,
+        fiber,
+        sugars,
+        hasBadIngredients,
+        reasons,
+      };
+    }
   }
 }

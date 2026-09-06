@@ -29,6 +29,7 @@
   </button>
 </nav>
 
+<!-- VUE RECHERCHE -->
 <div *ngIf="currentView() === 'search'">
   <main style="max-width: 480px; margin: 0 auto; padding: 20px; font-family: system-ui, sans-serif">
     <header style="text-align: center; margin-bottom: 24px">
@@ -113,6 +114,7 @@
           "
         >
           <img
+            *ngIf="product.image_url"
             [src]="product.image_url"
             [alt]="product.product_name"
             style="width: 100%; height: 180px; object-fit: contain; margin-bottom: 12px"
@@ -126,13 +128,14 @@
               margin-bottom: 8px;
             "
           >
-            <h2 style="margin: 0 0 4px 0; font-size: 20px">{{ product.product_name }}</h2>
+            <h2 style="margin: 0 0 4px 0; font-size: 20px">
+              {{ product.product_name || 'Produit sans nom' }}
+            </h2>
             <button
               (click)="productService.toggleFavorite(product)"
               style="
                 background: none;
                 border: none;
-                margin-right: 12px;
                 padding: 4px;
                 cursor: pointer;
                 display: flex;
@@ -140,20 +143,45 @@
               "
               title="Ajouter aux favoris"
             >
-              <lucide-icon
-                [img]="Star"
-                [size]="24"
-                [style.color]="
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                [attr.fill]="
+                  productService.isFavorite(product.code || barcodeInput) ? '#f3b300' : 'none'
+                "
+                [attr.stroke]="
                   productService.isFavorite(product.code || barcodeInput) ? '#f3b300' : '#ccc'
                 "
-              ></lucide-icon>
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <polygon
+                  points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"
+                />
+              </svg>
             </button>
           </div>
 
           <p style="color: #888; font-size: 14px; margin: 0 0 16px 0">{{ product.brands }}</p>
 
           <div
-            [class]="analysis.colorClass"
+            [style.color]="
+              analysis.scoreLevel === 'GREEN'
+                ? '#16a34a'
+                : analysis.scoreLevel === 'ORANGE'
+                  ? '#f97316'
+                  : '#dc2626'
+            "
+            [style.background-color]="
+              analysis.scoreLevel === 'GREEN'
+                ? '#f0fdf4'
+                : analysis.scoreLevel === 'ORANGE'
+                  ? '#fff7ed'
+                  : '#fef2f2'
+            "
             style="
               padding: 12px;
               border-radius: 8px;
@@ -162,6 +190,13 @@
               margin-bottom: 16px;
             "
           >
+            {{
+              analysis.scoreLevel === 'GREEN'
+                ? '🟢'
+                : analysis.scoreLevel === 'ORANGE'
+                  ? '🟠'
+                  : '🔴'
+            }}
             {{ analysis.label }}
           </div>
 
@@ -190,12 +225,47 @@
             <span>Fibres (100g) :</span>
             <strong>{{ analysis.fiber }}g</strong>
           </div>
+          <div
+            style="
+              display: flex;
+              justify-content: space-between;
+              font-size: 14px;
+              border-top: 1px solid #eee;
+              padding-top: 8px;
+              margin-top: 8px;
+            "
+          >
+            <span>sucres (100g) :</span>
+            <strong>{{ analysis.sugars }}g</strong>
+          </div>
+          <div
+            style="
+              display: flex;
+              flex-direction: column;
+              font-size: 14px;
+              border-top: 1px solid #eee;
+              padding-top: 8px;
+              margin-top: 8px;
+            "
+          >
+            <strong style="margin-bottom: 6px; font-weight: bold">Raisons :</strong>
+            <ul style="margin: 0; padding-left: 20px; color: #374151">
+              @for (reason of analysis.reasons; track reason) {
+                <li style="margin-bottom: 4px">{{ reason }}</li>
+              }
+            </ul>
+          </div>
         </article>
       }
     }
   </main>
 </div>
-<div *ngIf="currentView() === 'favorites'" style="max-width: 500px; margin: 0 auto; padding: 10px">
+
+<!-- VUE FAVORIS -->
+<div
+  *ngIf="currentView() === 'favorites'"
+  style="max-width: 500px; margin: 0 auto; padding: 10px; font-family: system-ui, sans-serif"
+>
   <h3 style="text-align: center">Mes produits enregistrés</h3>
 
   <div
@@ -229,8 +299,31 @@
           style="width: 48px; height: 48px; object-fit: contain; border-radius: 4px"
         />
         <div>
-          <div style="font-weight: bold">{{ item.product_name || 'Produit sans nom' }}</div>
+          <div style="font-weight: bold">
+            {{ item.product_name || 'Code : ' + item.code }}
+          </div>
           <div style="font-size: 12px; color: #666">{{ item.brands }}</div>
+
+          <div
+            *ngIf="item.nutriments"
+            [style.color]="
+              productService.analyseCholesterol(item).scoreLevel === 'GREEN'
+                ? '#16a34a'
+                : productService.analyseCholesterol(item).scoreLevel === 'ORANGE'
+                  ? '#ea580c'
+                  : '#dc2626'
+            "
+            style="font-size: 12px; font-weight: 600; margin-top: 2px"
+          >
+            {{
+              productService.analyseCholesterol(item).scoreLevel === 'GREEN'
+                ? '🟢'
+                : productService.analyseCholesterol(item).scoreLevel === 'ORANGE'
+                  ? '🟠'
+                  : '🔴'
+            }}
+            {{ productService.analyseCholesterol(item).label }}
+          </div>
         </div>
       </div>
 
