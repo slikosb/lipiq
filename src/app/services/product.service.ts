@@ -24,7 +24,16 @@ export class ProductService {
   private loadFavorites(): Product[] {
     try {
       const saved = localStorage.getItem('lipiq_favorites');
-      return saved ? JSON.parse(saved) : [];
+      if (!saved) return [];
+
+      const parsed = JSON.parse(saved);
+
+      return parsed.map((item: any) => {
+        if (typeof item === 'string') {
+          return { code: item, product_name: `Code : ${item}` };
+        }
+        return item;
+      });
     } catch {
       return [];
     }

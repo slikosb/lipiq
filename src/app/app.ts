@@ -2,7 +2,7 @@ import { Component, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ZXingScannerModule } from '@zxing/ngx-scanner';
 import { LucideAngularModule, LUCIDE_ICONS, LucideIconProvider, Star } from 'lucide-angular';
-import { ProductService } from './services/product.service';
+import { FavoriteProduct, ProductService } from './services/product.service';
 import { BarcodeFormat } from '@zxing/library';
 import { CommonModule } from '@angular/common';
 
@@ -38,10 +38,10 @@ export class App {
     this.isScannerOpen.set(false);
   }
 
-  selectFavorite(code: string): void {
-    this.barcodeInput = code;
+  selectFavorite(fav: FavoriteProduct): void {
+    this.barcodeInput = fav.code;
     this.setView('search');
-    this.searchByBarcode(code);
+    this.searchByBarcode(fav.code);
   }
 
   searchByBarcode(code?: string): void {
