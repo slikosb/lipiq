@@ -1,0 +1,82 @@
+@if (productService.currentProduct(); as product) {
+  @if (productService.analysis(); as analysis) {
+    <article class="border border-gray-200 rounded-2xl p-4 shadow-sm bg-white">
+      @if (product.image_url) {
+        <img
+          [src]="product.image_url"
+          [alt]="product.product_name"
+          class="w-full h-[180px] object-contain mb-3"
+        />
+      }
+
+      <div class="flex justify-between items-center mb-2">
+        <h2 class="m-0 mb-1 text-xl font-bold">
+          {{ product.product_name || 'Produit sans nom' }}
+        </h2>
+        <button
+          (click)="productService.toggleFavorite(product)"
+          class="bg-transparent border-0 p-1 cursor-pointer flex items-center"
+          title="Ajouter aux favoris"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            [attr.fill]="productService.isFavorite(product.code || barcode()) ? '#f3b300' : 'none'"
+            [attr.stroke]="
+              productService.isFavorite(product.code || barcode()) ? '#f3b300' : '#ccc'
+            "
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <polygon
+              points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"
+            />
+          </svg>
+        </button>
+      </div>
+
+      <p class="text-gray-400 text-sm m-0 mb-4">{{ product.brands }}</p>
+
+      <!-- Bloc score couleur -->
+      <div
+        [class]="
+          'p-3 rounded-lg font-bold text-center mb-4 ' +
+          (analysis.scoreLevel === 'GREEN'
+            ? 'text-green-600 bg-green-50'
+            : analysis.scoreLevel === 'ORANGE'
+              ? 'text-orange-500 bg-orange-50'
+              : 'text-red-600 bg-red-50')
+        "
+      >
+        {{
+          analysis.scoreLevel === 'GREEN' ? '🟢' : analysis.scoreLevel === 'ORANGE' ? '🟠' : '🔴'
+        }}
+        {{ analysis.label }}
+      </div>
+
+      <div class="flex justify-between text-sm border-t border-gray-100 pt-3">
+        <span>Graisses saturées (100g) :</span>
+        <strong>{{ analysis.saturatedFat }}g</strong>
+      </div>
+      <div class="flex justify-between text-sm border-t border-gray-100 pt-2 mt-2">
+        <span>Fibres (100g) :</span>
+        <strong>{{ analysis.fiber }}g</strong>
+      </div>
+      <div class="flex justify-between text-sm border-t border-gray-100 pt-2 mt-2">
+        <span>sucres (100g) :</span>
+        <strong>{{ analysis.sugars }}g</strong>
+      </div>
+      <div class="flex flex-col text-sm border-t border-gray-100 pt-2 mt-2">
+        <strong class="mb-1.5 font-bold">Raisons :</strong>
+        <ul class="m-0 pl-5 text-gray-700">
+          @for (reason of analysis.reasons; track reason) {
+            <li class="mb-1">{{ reason }}</li>
+          }
+        </ul>
+      </div>
+    </article>
+  }
+}

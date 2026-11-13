@@ -1,19 +1,20 @@
 <nav
-  class="flex justify-center gap-6 py-4 mb-4 border-b border-gray-200 bg-white shadow-xs font-sans"
+  class="fixed inset-x-4 bottom-4 z-50 flex items-center justify-around rounded-2xl bg-linear-65 from-[#8CC331] via-[#558D33] to-[#134A30] p-2 shadow-xl"
 >
   <a
     routerLink="/search"
-    routerLinkActive="font-bold text-[#0c2f34] border-b-2 border-[#0c2f34]"
-    [routerLinkActiveOptions]="{ exact: true }"
-    class="px-4 py-2 transition-colors text-gray-600 no-underline"
+    routerLinkActive="bg-white !text-[#134A30] font-semibold"
+    class="flex flex-1 items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-white/90 no-underline transition-all"
   >
-    Recherche
+    <lucide-icon [img]="ScanSearch" class="w-5 h-5"></lucide-icon>
+    Scan
   </a>
   <a
     routerLink="/favorites"
-    routerLinkActive="font-bold text-[#0c2f34] border-b-2 border-[#0c2f34]"
-    class="px-4 py-2 transition-colors text-gray-600 no-underline"
+    routerLinkActive="bg-white !text-[#134A30] font-semibold"
+    class="flex flex-1 items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-white/90 no-underline transition-all"
   >
+    <lucide-icon [img]="Star" class="w-5 h-5"></lucide-icon>
     Favoris ({{ productService.favorites().length }})
   </a>
 </nav>

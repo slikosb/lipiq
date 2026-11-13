@@ -1,12 +1,16 @@
-import { Component, inject, input, output } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { ProductService } from '../../services/product.service';
 import { RouterLink, RouterLinkActive } from '@angular/router';
+import { LucideAngularModule, ScanSearch, Star } from 'lucide-angular';
 
 @Component({
-  imports: [RouterLink, RouterLinkActive],
+  imports: [RouterLink, RouterLinkActive, LucideAngularModule],
   selector: 'app-navbar-component',
+  host: { class: 'block' },
   templateUrl: './navbar-component.html',
 })
 export class NavbarComponent {
   productService = inject(ProductService);
+  readonly ScanSearch = ScanSearch;
+  readonly Star = Star;
 }
