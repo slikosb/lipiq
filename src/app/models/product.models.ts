@@ -5,28 +5,26 @@ export interface Product {
   image_url?: string;
   ingredients_text?: string;
   ingredients_text_fr?: string;
+  ingredients_tags?: string[]; // ajout
   nutriments: {
     'saturated-fat_100g'?: number;
-    'saturated-fat'?: number;
+    'trans-fat_100g'?: number; // ajout
     sugars_100g?: number;
-    sugars?: number;
     fiber_100g?: number;
-    fiber?: number;
     fat_100g?: number;
-    fat?: number;
   };
 }
 
-export type CholesterolStatus = 'EXCELLENT' | 'MODERE' | 'MAUVAIS';
-export type ScoreLevel = 'GREEN' | 'ORANGE' | 'RED';
+export type CholesterolStatus = 'EXCELLENT' | 'MODERE' | 'MAUVAIS' | 'INCONNU';
+export type ScoreLevel = 'GREEN' | 'ORANGE' | 'RED' | 'GRAY';
 
 export interface CholesterolAnalysis {
   status: CholesterolStatus;
   scoreLevel: ScoreLevel;
   label: string;
-  saturatedFat: number;
-  fiber: number;
-  sugars: number;
+  saturatedFat?: number | null;
+  fiber?: number | null;
+  sugars?: number | null;
   hasBadIngredients: boolean;
   reasons: string[];
 }
