@@ -15,6 +15,7 @@ import { RouterOutlet } from '@angular/router';
     CommonModule,
     NavbarComponent,
     RouterOutlet,
+    HeaderComponent,
   ],
   standalone: true,
   selector: 'app-root',

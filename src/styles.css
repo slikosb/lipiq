@@ -1,2 +1,6 @@
 @import 'tailwindcss';
 @import 'primeicons/primeicons.css';
+
+@utility bg-gradient {
+  @apply bg-linear-65 from-[#8CC331] via-[#558D33] to-[#134A30];
+}

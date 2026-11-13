@@ -1,14 +1,13 @@
 import { Component, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ZXingScannerModule } from '@zxing/ngx-scanner';
-import { CommonModule } from '@angular/common';
 import { BarcodeFormat } from '@zxing/library';
 import { ProductService } from '../../services/product.service';
-import { HeaderComponent } from '../../components/header-component/header-component';
+import { ProductCardComponent } from '../../components/product-card-component/product-card-component';
 
 @Component({
   selector: 'app-search',
-  imports: [FormsModule, ZXingScannerModule, CommonModule, HeaderComponent],
+  imports: [FormsModule, ZXingScannerModule, ProductCardComponent],
   templateUrl: './search.html',
 })
 export class SearchComponent {

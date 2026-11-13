@@ -1,14 +1,14 @@
-<div class="max-w-[500px] mx-auto p-2.5 font-sans">
+<div class="w-full max-w-md md:max-w-xl lg:max-w-2xl mx-auto px-4 py-4 font-sans">
   <h3 class="text-center font-bold text-lg mb-4">Mes produits enregistrés</h3>
 
   @if (productService.favorites().length === 0) {
     <div class="text-center text-gray-500 mt-5">Aucun produit dans vos favoris.</div>
   }
 
-  <div class="flex flex-col gap-2.5 mt-4">
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
     @for (item of productService.favorites(); track item.code) {
       <div
-        class="flex items-center justify-between border border-gray-200 rounded-lg p-2.5 bg-white shadow-xs"
+        class="flex items-center justify-between border border-gray-200 rounded-xl p-4 bg-white shadow-xs hover:shadow-md transition-shadow"
       >
         <div
           (click)="selectFavorite(item)"
