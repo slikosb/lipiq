@@ -41,42 +41,52 @@
       <p class="text-gray-400 text-sm m-0 mb-4">{{ product.brands }}</p>
 
       <!-- Bloc score couleur -->
-      <div
-        [class]="
-          'p-3 rounded-lg font-bold text-center mb-4 ' +
-          (analysis.scoreLevel === 'GREEN'
-            ? 'text-green-600 bg-green-50'
-            : analysis.scoreLevel === 'ORANGE'
-              ? 'text-orange-500 bg-orange-50'
-              : 'text-red-600 bg-red-50')
-        "
-      >
-        {{
-          analysis.scoreLevel === 'GREEN' ? '🟢' : analysis.scoreLevel === 'ORANGE' ? '🟠' : '🔴'
-        }}
-        {{ analysis.label }}
+      <div class="flex justify-between items-center border border-red-500">
+        <div
+          [class]="
+            'p-3 rounded-lg font-bold text-center ' +
+            (analysis.scoreLevel === 'GREEN'
+              ? 'text-green-600 bg-green-50'
+              : analysis.scoreLevel === 'ORANGE'
+                ? 'text-orange-500 bg-orange-50'
+                : 'text-red-600 bg-red-50')
+          "
+        >
+          {{
+            analysis.scoreLevel === 'GREEN' ? '🟢' : analysis.scoreLevel === 'ORANGE' ? '🟠' : '🔴'
+          }}
+          {{ analysis.label }}
+        </div>
+        <button (click)="setDisplay()" class="hover:bg-gray-300 w-5 h-5 rounded-xl cursor-pointer">
+          <lucide-icon
+            [img]="!displayInfos() ? ChevronRight : ChevronDown"
+            class="w-5 h-5"
+          ></lucide-icon>
+        </button>
       </div>
 
-      <div class="flex justify-between text-sm border-t border-gray-100 pt-3">
-        <span>Graisses saturées (100g) :</span>
-        <strong>{{ analysis.saturatedFat }}g</strong>
-      </div>
-      <div class="flex justify-between text-sm border-t border-gray-100 pt-2 mt-2">
-        <span>Fibres (100g) :</span>
-        <strong>{{ analysis.fiber }}g</strong>
-      </div>
-      <div class="flex justify-between text-sm border-t border-gray-100 pt-2 mt-2">
-        <span>sucres (100g) :</span>
-        <strong>{{ analysis.sugars }}g</strong>
-      </div>
-      <div class="flex flex-col text-sm border-t border-gray-100 pt-2 mt-2">
-        <strong class="mb-1.5 font-bold">Raisons :</strong>
-        <ul class="m-0 pl-5 text-gray-700">
-          @for (reason of analysis.reasons; track reason) {
-            <li class="mb-1">{{ reason }}</li>
-          }
-        </ul>
-      </div>
+      @if (displayInfos()) {
+        <div class="flex justify-between text-sm border-t border-gray-100 pt-3">
+          <span>Graisses saturées (100g) :</span>
+          <strong>{{ analysis.saturatedFat }}g</strong>
+        </div>
+        <div class="flex justify-between text-sm border-t border-gray-100 pt-2 mt-2">
+          <span>Fibres (100g) :</span>
+          <strong>{{ analysis.fiber ?? ' - ' }}g</strong>
+        </div>
+        <div class="flex justify-between text-sm border-t border-gray-100 pt-2 mt-2">
+          <span>sucres (100g) :</span>
+          <strong>{{ analysis.sugars }}g</strong>
+        </div>
+        <div class="flex flex-col text-sm border-t border-gray-100 pt-2 mt-2">
+          <strong class="mb-1.5 font-bold">Raisons :</strong>
+          <ul class="m-0 pl-5 text-gray-700">
+            @for (reason of analysis.reasons; track reason) {
+              <li class="mb-1">{{ reason }}</li>
+            }
+          </ul>
+        </div>
+      }
     </article>
   }
 }

@@ -86,6 +86,7 @@ export class ProductService {
   }
 
   analyseCholesterol(product: Product): CholesterolAnalysis {
+    console.log(product);
     const n = product.nutriments ?? {};
     const satFat: number | null = n['saturated-fat_100g'] ?? null;
     const fiber: number | null = n['fiber_100g'] ?? null;
