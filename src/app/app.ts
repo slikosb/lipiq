@@ -1,87 +1,24 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ZXingScannerModule } from '@zxing/ngx-scanner';
-import { LucideAngularModule, Star } from 'lucide-angular';
-import { FavoriteProduct, ProductService } from './services/product.service';
-import { BarcodeFormat } from '@zxing/library';
+import { LucideAngularModule } from 'lucide-angular';
 import { CommonModule } from '@angular/common';
-import { Product, CholesterolAnalysis } from './models/product.models';
+import { NavbarComponent } from './components/navbar-component/navbar-component';
+import { HeaderComponent } from './components/header-component/header-component';
+import { RouterOutlet } from '@angular/router';
 
 @Component({
-  imports: [FormsModule, ZXingScannerModule, LucideAngularModule, CommonModule],
+  imports: [
+    FormsModule,
+    ZXingScannerModule,
+    LucideAngularModule,
+    CommonModule,
+    NavbarComponent,
+    RouterOutlet,
+  ],
   standalone: true,
   selector: 'app-root',
   styleUrl: './app.css',
   templateUrl: './app.html',
 })
-export class App {
-  readonly Star = Star;
-  productService: ProductService = inject(ProductService);
-
-  currentView = signal<'search' | 'favorites'>('search');
-  barcodeInput = '';
-  isScannerOpen = signal(false);
-  loading = signal(false);
-  errorMessage = signal<string | null>(null);
-
-  // Formats de code-barres supportés en supermarché
-  allowedFormats = [
-    BarcodeFormat.EAN_13,
-    BarcodeFormat.EAN_8,
-    BarcodeFormat.UPC_A,
-    BarcodeFormat.UPC_E,
-    BarcodeFormat.CODE_128,
-    BarcodeFormat.CODE_39,
-  ];
-
-  setView(view: 'search' | 'favorites'): void {
-    this.currentView.set(view);
-    this.isScannerOpen.set(false);
-  }
-
-  selectFavorite(fav: FavoriteProduct): void {
-    this.barcodeInput = fav.code;
-    this.setView('search');
-    this.searchByBarcode(fav.code);
-  }
-
-  searchByBarcode(code?: string): void {
-    const targetCode = code || this.barcodeInput.trim();
-    if (!targetCode) return;
-
-    this.loading.set(true);
-    this.errorMessage.set(null);
-    this.isScannerOpen.set(false);
-
-    this.productService.getByBarcode(targetCode).subscribe({
-      next: () => {
-        this.loading.set(false);
-      },
-      error: (err) => {
-        this.loading.set(false);
-        this.errorMessage.set('Produit introuvable ou problème réseau.');
-      },
-    });
-  }
-
-  toggleScanner(): void {
-    this.isScannerOpen.update((v) => !v);
-  }
-
-  onScanSuccess(result: string): void {
-    if (result) {
-      this.barcodeInput = result;
-      this.searchByBarcode(result);
-    }
-  }
-
-  onPermissionResponse(hasPermission: boolean): void {
-    if (!hasPermission) {
-      this.errorMessage.set('Accès à la caméra refusé dans votre navigateur.');
-    }
-  }
-
-  getAnalysis(product: Product): CholesterolAnalysis {
-    return this.productService.analyseCholesterol(product);
-  }
-}
+export class App {}

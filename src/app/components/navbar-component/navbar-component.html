@@ -1,0 +1,19 @@
+<nav
+  class="flex justify-center gap-6 py-4 mb-4 border-b border-gray-200 bg-white shadow-xs font-sans"
+>
+  <a
+    routerLink="/search"
+    routerLinkActive="font-bold text-[#0c2f34] border-b-2 border-[#0c2f34]"
+    [routerLinkActiveOptions]="{ exact: true }"
+    class="px-4 py-2 transition-colors text-gray-600 no-underline"
+  >
+    Recherche
+  </a>
+  <a
+    routerLink="/favorites"
+    routerLinkActive="font-bold text-[#0c2f34] border-b-2 border-[#0c2f34]"
+    class="px-4 py-2 transition-colors text-gray-600 no-underline"
+  >
+    Favoris ({{ productService.favorites().length }})
+  </a>
+</nav>

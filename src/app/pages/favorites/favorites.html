@@ -1,0 +1,65 @@
+<div class="max-w-[500px] mx-auto p-2.5 font-sans">
+  <h3 class="text-center font-bold text-lg mb-4">Mes produits enregistrés</h3>
+
+  @if (productService.favorites().length === 0) {
+    <div class="text-center text-gray-500 mt-5">Aucun produit dans vos favoris.</div>
+  }
+
+  <div class="flex flex-col gap-2.5 mt-4">
+    @for (item of productService.favorites(); track item.code) {
+      <div
+        class="flex items-center justify-between border border-gray-200 rounded-lg p-2.5 bg-white shadow-xs"
+      >
+        <div
+          (click)="selectFavorite(item)"
+          class="flex items-center gap-3 cursor-pointer flex-1 min-w-0"
+        >
+          @if (item.image_url) {
+            <img
+              [src]="item.image_url"
+              [alt]="item.product_name"
+              class="w-12 h-12 object-contain rounded shrink-0"
+            />
+          }
+
+          <div class="min-w-0 flex-1">
+            <div class="font-bold truncate">
+              {{ item.product_name || 'Code : ' + item.code }}
+            </div>
+
+            <div class="text-xs text-gray-500 truncate">{{ item.brands }}</div>
+
+            @if (item.nutriments) {
+              <div
+                [class]="
+                  'text-xs font-semibold mt-0.5 truncate ' +
+                  (productService.analyseCholesterol(item).scoreLevel === 'GREEN'
+                    ? 'text-green-600'
+                    : productService.analyseCholesterol(item).scoreLevel === 'ORANGE'
+                      ? 'text-orange-600'
+                      : 'text-red-600')
+                "
+              >
+                {{
+                  productService.analyseCholesterol(item).scoreLevel === 'GREEN'
+                    ? '🟢'
+                    : productService.analyseCholesterol(item).scoreLevel === 'ORANGE'
+                      ? '🟠'
+                      : '🔴'
+                }}
+                {{ productService.analyseCholesterol(item).label }}
+              </div>
+            }
+          </div>
+        </div>
+
+        <button
+          (click)="productService.toggleFavorite(item)"
+          class="bg-transparent border-0 text-red-500 cursor-pointer p-2 hover:underline text-sm font-medium shrink-0"
+        >
+          Supprimer
+        </button>
+      </div>
+    }
+  </div>
+</div>
